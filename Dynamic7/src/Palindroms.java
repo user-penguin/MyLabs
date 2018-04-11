@@ -29,6 +29,25 @@ public class Palindroms {
         }
     }
 
+    public static boolean possible(ArrayList<Pare> toPaste, Pare fromPaste){
+        boolean[] flags = new boolean[toPaste.size()];
+        for(int i = 0; i < flags.length; i++)
+            flags[i] = false;
+
+        for(int i = 0; i < toPaste.size(); i++){
+            if(fromPaste.first < toPaste.get(i).first && fromPaste.last > toPaste.get(i).last ||
+                    fromPaste.first > toPaste.get(i).first && fromPaste.last < toPaste.get(i).last)
+                flags[i] = true;
+        }
+
+        boolean finFlag = true;
+        for(int i = 0; i < flags.length; i++)
+            if(flags[i] == false)
+                finFlag = false;
+
+        return finFlag;
+    }
+
     public static void main(String[] args){
         String text = getString();
         if (text == null){
@@ -46,6 +65,7 @@ public class Palindroms {
         for (int i = 0; i < textInChar.length; i++)
             notUsedSym.add(i);
 
+
         // обход символов и создание алфавита
         while (notUsedSym.size() > 0){
             AlphaBet.add(new Record(textInChar[notUsedSym.get(0)], notUsedSym.get(0)));
@@ -61,11 +81,34 @@ public class Palindroms {
         }
         System.out.println("Alphabet done!");
 
+
         // разобьём на пары
         ArrayList<Pare> Pares = new ArrayList<>();
         for(int i = 0; i < AlphaBet.size(); i++){
             makePares(Pares, AlphaBet, i);
         }
         System.out.println("Pares done!");
+
+
+        // вычислим скрытые палиндромы
+        ArrayList<ArrayList<Pare>> finHidPalindroms = new ArrayList<>();
+        finHidPalindroms.add(new ArrayList<Pare>());
+        int cursorBeg = 0;
+        int cursorEnd = 0;
+        boolean doing = true;
+        while(doing){
+            for(int i = 0; i < Pares.size(); i++) {
+                if(possible(finHidPalindroms.get(cursorBeg), Pares.get(i))) {
+                    finHidPalindroms.add(new ArrayList<Pare>());
+                    cursorEnd++;
+                    finHidPalindroms.get(cursorEnd).addAll(finHidPalindroms.get(cursorBeg));
+                    finHidPalindroms.get(cursorEnd).add(Pares.get(i));
+                }
+            }
+            cursorBeg++;
+
+            if(cursorBeg > cursorEnd)
+                doing = false;
+        }
     }
 }
