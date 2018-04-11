@@ -1,6 +1,8 @@
 ///Дана строка из заглавных латинских букв. Необходимо найти длину самого большого палиндрома,
 ///который можно получить вычёркиванием некоторых букв из данной строки.
 
+import javafx.animation.StrokeTransition;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,6 +50,46 @@ public class Palindroms {
         return finFlag;
     }
 
+    public static int[] getIndexes(ArrayList<Pare> pares){
+        int[] indexes = new int[2];
+        int num = 0;
+        int min = 0;
+        for(int i = 0; i < pares.size(); i++){
+            if(pares.get(i).first > min){
+                num = i;
+                min = pares.get(i).first;
+            }
+        }
+        indexes[0] = pares.get(num).first;
+        indexes[1] = pares.get(num).last;
+
+        return indexes;
+    }
+
+    public static String findSym(ArrayList<Pare> pares, boolean incl, int num, char[] text, int lenPalin){
+        int[] numbers = new int[text.length];
+        for(int i = 0; i < pares.size(); i++){
+            numbers[pares.get(i).first] = 1;
+            numbers[pares.get(i).last] = 1;
+        }
+        if(incl)
+            numbers[num] = 1;
+
+        String palin = new String();
+        String messg = new String();
+        messg += "\nБуквы, которые стоит исключить: \n";
+        for(int i = 0; i < numbers.length; i++){
+            if(numbers[i] == 1)
+                palin += text[i];
+            if(numbers[i] == 0){
+                messg += text[i] + " на месте " + Integer.toString(i) + "\n";
+            }
+        }
+        messg += palin;
+        return messg;
+    }
+
+
     public static void main(String[] args){
         String text = getString();
         if (text == null){
@@ -89,26 +131,72 @@ public class Palindroms {
         }
         System.out.println("Pares done!");
 
+        if(Pares.size() == 0 && text.length() > 1)
+            System.out.println("Палиндромов нет вовсе!");
+        else if(Pares.size() == 0 && text.length() == 1){
+            System.out.println("Палиндром = " + text);
+        }
 
-        // вычислим скрытые палиндромы
-        ArrayList<ArrayList<Pare>> finHidPalindroms = new ArrayList<>();
-        finHidPalindroms.add(new ArrayList<Pare>());
-        int cursorBeg = 0;
-        int cursorEnd = 0;
-        boolean doing = true;
-        while(doing){
-            for(int i = 0; i < Pares.size(); i++) {
-                if(possible(finHidPalindroms.get(cursorBeg), Pares.get(i))) {
-                    finHidPalindroms.add(new ArrayList<Pare>());
-                    cursorEnd++;
-                    finHidPalindroms.get(cursorEnd).addAll(finHidPalindroms.get(cursorBeg));
-                    finHidPalindroms.get(cursorEnd).add(Pares.get(i));
+        else {
+            // вычислим скрытые палиндромы
+            ArrayList<ArrayList<Pare>> finHidPalindroms = new ArrayList<>();
+            finHidPalindroms.add(new ArrayList<Pare>());
+            int cursorBeg = 0;
+            int cursorEnd = 0;
+            boolean doing = true;
+            while (doing) {
+                for (int i = 0; i < Pares.size(); i++) {
+                    if (possible(finHidPalindroms.get(cursorBeg), Pares.get(i))) {
+                        finHidPalindroms.add(new ArrayList<Pare>());
+                        cursorEnd++;
+                        finHidPalindroms.get(cursorEnd).addAll(finHidPalindroms.get(cursorBeg));
+                        finHidPalindroms.get(cursorEnd).add(Pares.get(i));
+                    }
+                }
+                cursorBeg++;
+
+                if (cursorBeg > cursorEnd)
+                    doing = false;
+            }
+
+
+            // посчитаем длину максимального палиндрома
+            int maxLenght = 0;
+            for (int i = 0; i < finHidPalindroms.size(); i++) {
+                if (finHidPalindroms.get(i).size() > maxLenght)
+                    maxLenght = finHidPalindroms.get(i).size();
+            }
+
+            // для каждого палиндрома нужно узнать, можно ли вставить букву в середину
+            int[] paste = new int[2];
+            int numderOfFinal = finHidPalindroms.size() - 1;
+            boolean symUnder = false;
+            int includ = 0;
+            for (int i = finHidPalindroms.size() - 1; i >= 0; i++) {
+                if(finHidPalindroms.get(i).size() == maxLenght){
+                    paste = getIndexes(finHidPalindroms.get(i));
+                }
+                if(paste[0] + 1 != paste[1]){
+                    numderOfFinal = i;
+                    symUnder = true;
+                    includ = paste[0] + 1;
+                    break;
                 }
             }
-            cursorBeg++;
 
-            if(cursorBeg > cursorEnd)
-                doing = false;
+            char under;
+            int n = 0;
+            if(symUnder) {
+                under = textInChar[includ];
+                n = 1;
+            }
+            int lenPalin = finHidPalindroms.get(numderOfFinal).size() * 2 + n;
+            String excep = new String();
+            excep = findSym(finHidPalindroms.get(numderOfFinal), symUnder, includ, textInChar, lenPalin);
+
+            System.out.format("Длина набольшего палиндрома = %d", lenPalin);
+            System.out.println(excep);
+
         }
     }
 }
