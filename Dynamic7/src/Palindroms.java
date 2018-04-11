@@ -20,6 +20,15 @@ public class Palindroms {
         return retText;
     }
 
+    public static void makePares(ArrayList<Pare> Pares, ArrayList<Record> ABC, int num){
+        int lenght = ABC.get(num).nums.size();
+        for(int i = 0; i < lenght - 1; i++){
+            for(int j = i + 1; j < lenght; j++){
+                Pares.add(new Pare(ABC.get(num).sym, ABC.get(num).nums.get(i), ABC.get(num).nums.get(j)));
+            }
+        }
+    }
+
     public static void main(String[] args){
         String text = getString();
         if (text == null){
@@ -51,5 +60,12 @@ public class Palindroms {
             }
         }
         System.out.println("Alphabet done!");
+
+        // разобьём на пары
+        ArrayList<Pare> Pares = new ArrayList<>();
+        for(int i = 0; i < AlphaBet.size(); i++){
+            makePares(Pares, AlphaBet, i);
+        }
+        System.out.println("Pares done!");
     }
 }
