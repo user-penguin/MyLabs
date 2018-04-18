@@ -4,9 +4,16 @@ public class Node {
     public String firstName;
     public String numberOfBook;
     public int[] marks = new int[5];
-    public Node left;
-    public Node right;
-    public Node parent;
+    public Node left = null;
+    public Node right = null;
+    public Node parent = null;
+
+    public Node(){
+        color = "red";
+        lastName = "";
+        firstName = "";
+        numberOfBook = "";
+    }
 
     public Node(String _color, String _lastName, String _firstName,
                 String _numberOfBook, int[] _marks){
