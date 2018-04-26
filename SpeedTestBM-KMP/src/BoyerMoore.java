@@ -1,25 +1,39 @@
+import java.util.ArrayList;
+
 public class BoyerMoore {
 
-
-    /** function findPattern **/
-    public void findPattern(String t, String p) {
+    /** управление поиском **/
+    public void findPattern(String t, String p, int offs) {
         char[] text = t.toCharArray();
-        char[] pattern = p.toCharArray(); //закинули слова в символьный массив
-        int pos = indexOf(text, pattern);
-        if (pos == -1)
-            System.out.println("\nNo Match\n");
-        else
-            System.out.println("Pattern found at position : "+ pos);
+        char[] pattern = p.toCharArray();
+        int pos = indexOf(text, pattern, offs);
+        if (pos == -1) {
+            firstWalk = true;
+        }
+        else {
+            System.out.println("Паттерн " + p + " найден в позиции : " + pos);
+            findPattern(t, p, pos + pattern.length);
+        }
     }
 
+    public boolean firstWalk = true;
+    public int charTable[];
+    public int offsetTable[];
 
-    /** Function to calculate index of pattern substring **/
-    public int indexOf(char[] text, char[] pattern) {
+    /** пробегаем по самой строке и сравниваем, что лучше применить **/
+    public int indexOf(char[] text, char[] pattern, int offs) {
         if (pattern.length == 0)
             return 0;
-        int charTable[] = makeCharTable(pattern);
-        int offsetTable[] = makeOffsetTable(pattern);
-        for (int i = pattern.length - 1, j; i < text.length;) {
+
+        if(firstWalk) {
+            charTable = makeCharTable(pattern);
+            offsetTable = makeOffsetTable(pattern);
+            firstWalk = false;
+        }
+
+
+        for (int i = pattern.length - 1 + offs, j; i < text.length;)
+        {
             for (j = pattern.length - 1; pattern[j] == text[i]; --i, --j)
                 if (j == 0)
                     return i;
@@ -31,7 +45,8 @@ public class BoyerMoore {
     }
 
 
-    /** Makes the jump table based on the mismatched character information **/
+    /** Создаёт таблицу длин прыжков-переходов, требуемых для смещения
+     при совпадении со стоп-символом или несовпадением **/
     private int[] makeCharTable(char[] pattern) {
         final int ALPHABET_SIZE = 256;
         int[] table = new int[ALPHABET_SIZE];
@@ -43,7 +58,7 @@ public class BoyerMoore {
     }
 
 
-    /** Makes the jump table based on the scan offset which mismatch occurs. **/
+    /** Делает таблицу перехода на основе суффикса **/
     private static int[] makeOffsetTable(char[] pattern) {
         int[] table = new int[pattern.length];
         int lastPrefixPosition = pattern.length;
@@ -62,7 +77,7 @@ public class BoyerMoore {
     }
 
 
-    /** function to check if needle[p:end] a prefix of pattern **/
+    /** является ли слово префиксом шаблона **/
     private static boolean isPrefix(char[] pattern, int p) {
         for (int i = p, j = 0; i < pattern.length; ++i, ++j)
             if (pattern[i] != pattern[j])
@@ -70,10 +85,8 @@ public class BoyerMoore {
         return true;
     }
 
-
-    /** function to returns the maximum length of the substring ends at p and is a suffix **/
-    private static int suffixLength(char[] pattern, int p)
-    {
+    /** возвращаем максимальную длину суффикса, входящего в оба слова **/
+    private static int suffixLength(char[] pattern, int p) {
         int len = 0;
         for (int i = p, j = pattern.length - 1; i >= 0 && pattern[i] == pattern[j]; --i, --j)
             len += 1;
