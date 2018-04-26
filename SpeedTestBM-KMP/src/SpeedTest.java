@@ -28,9 +28,13 @@ public class SpeedTest {
     public static void main(String[] args){
         SpeedTest mn = new SpeedTest();
         BufferedReader rd = new BufferedReader(new InputStreamReader(System.in));
-
+        BoyerMoore BM = new BoyerMoore();
+        KMP kmp = new KMP();
 
         String text; //исходная строка
+        text = mn.readStartString();
+
+
         String incl_one = "";
         String incl_two = "";       //подстроки которые будем искать
         String incl_three = "";
@@ -46,11 +50,19 @@ public class SpeedTest {
 
 
         long startTime = System.currentTimeMillis();
-        text = mn.readStartString();
+        BM.findPattern(text, incl_one, 0);
+        BM.findPattern(text, incl_two, 0);
+        BM.findPattern(text, incl_three, 0);
         long stopTime = System.currentTimeMillis();
         long result = stopTime - startTime;
-        System.out.println(result);
-        
-        System.out.println("String done!");
+        System.out.println("Результат Бойера-Мура = " + result);
+
+        startTime = System.currentTimeMillis();
+        kmp.FindKMP(incl_one, text);
+        kmp.FindKMP(incl_two, text);
+        kmp.FindKMP(incl_three, text);
+        stopTime = System.currentTimeMillis();
+        result = stopTime - startTime;
+        System.out.println("Результат Кнута-Морриса-Пратта = " + result);
     }
 }
