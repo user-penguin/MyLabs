@@ -10,13 +10,21 @@ import org.json.*;
 public class Hack {
 
     public static void main(String[] args){
+        System.out.println("Введите id пользователя");
+        String id_user = "";
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            id_user = br.readLine();
+        }
+        catch (IOException e) {
+          //  e.printStackTrace();
+        }
 
         String JSON_STRING;
 
-        String json_url = "https://api.vk.com/method/users.get?" +
-                "user_ids=" +
-                "yan.universe" +
-                "&fields=contacts,bdate,city,education&v=5.74";
+        String json_url = "https://api.vk.com/method/users.get?" + "user_ids=" +
+                id_user
+                + "&fields=contacts,bdate,city,education&v=5.74";
         try {
             URL url = new URL(json_url);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
