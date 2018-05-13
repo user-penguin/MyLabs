@@ -115,7 +115,7 @@ public class Main extends Application {
         ArrayList<point> points = new ArrayList<>();
         //getPoints(points);
         Random ranNum = new Random();
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 200 ; i++){
             points.add(new point(ranNum.nextInt(700) + 20, ranNum.nextInt(600) + 20));
         }
 
@@ -150,7 +150,7 @@ public class Main extends Application {
                         context.setFill(Color.ROSYBROWN); // устанавливаем цвет
                         context.fillOval(points.get(i).x - 5, points.get(i).y - 5, 10, 10); // рисуем овал с левым верхним углом в точке (10;20) и высотой = ширине = 50px
                     }
-                    
+
                     return;
                 }
                 //затираем
